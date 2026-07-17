@@ -1,82 +1,46 @@
-// Timezone data with UTC offsets (in minutes)
-const timezones = [
-    { id: 'ny', name: 'New York', offset: -300 },           // UTC-5
-    { id: 'london', name: 'London', offset: 0 },             // UTC+0
-    { id: 'paris', name: 'Paris', offset: 60 },              // UTC+1
-    { id: 'dubai', name: 'Dubai', offset: 240 },             // UTC+4
-    { id: 'india', name: 'India', offset: 330 },             // UTC+5:30
-    { id: 'singapore', name: 'Singapore', offset: 480 },     // UTC+8
-    { id: 'tokyo', name: 'Tokyo', offset: 540 },             // UTC+9
-    { id: 'sydney', name: 'Sydney', offset: 660 },           // UTC+11
-    { id: 'la', name: 'Los Angeles', offset: -480 },         // UTC-8
-    { id: 'toronto', name: 'Toronto', offset: -300 },        // UTC-5
-    { id: 'mexico', name: 'Mexico City', offset: -360 },     // UTC-6
-    { id: 'brazil', name: 'São Paulo', offset: -180 }        // UTC-3
-];
+// ==================== MOBILE NAV ====================
+const hamburger = document.querySelector('.hamburger');
+const navMenu = document.querySelector('.nav-list ul');
+const navLinks = document.querySelectorAll('.nav-list ul a');
 
-/**
- * Format time with leading zeros
- */
-function formatTime(hours, minutes, seconds) {
-    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+function toggleMenu(open) {
+    const isOpen = open ?? !navMenu.classList.contains('active');
+    navMenu.classList.toggle('active', isOpen);
+    hamburger.classList.toggle('active', isOpen);
+    hamburger.setAttribute('aria-expanded', String(isOpen));
 }
 
-/**
- * Format date
- */
-function formatDate(date) {
-    const options = { weekday: 'short', month: 'short', day: 'numeric' };
-    return date.toLocaleDateString('en-US', options);
-}
+hamburger.addEventListener('click', () => toggleMenu());
+navLinks.forEach(link => link.addEventListener('click', () => toggleMenu(false)));
 
-/**
- * Update clock for a specific timezone
- */
-function updateClock(timezone) {
-    // Get current UTC time
-    const now = new Date();
-    const utcTime = now.getTime() + now.getTimezoneOffset() * 60000;
-    
-    // Create date for specific timezone
-    const tzTime = new Date(utcTime + timezone.offset * 60000);
-    
-    // Get hours, minutes, seconds
-    const hours = tzTime.getHours();
-    const minutes = tzTime.getMinutes();
-    const seconds = tzTime.getSeconds();
-    
-    // Update DOM elements
-    const timeElement = document.getElementById(`${timezone.id}-time`);
-    const dateElement = document.getElementById(`${timezone.id}-date`);
-    
-    if (timeElement) {
-        timeElement.textContent = formatTime(hours, minutes, seconds);
-    }
-    
-    if (dateElement) {
-        dateElement.textContent = formatDate(tzTime);
-    }
-}
+// ==================== STICKY HEADER ====================
+const header = document.getElementById('header');
+const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 20);
+onScroll();
+window.addEventListener('scroll', onScroll, { passive: true });
 
-/**
- * Update all clocks
- */
-function updateAllClocks() {
-    timezones.forEach(timezone => {
-        updateClock(timezone);
+// ==================== SCROLLSPY (active nav link) ====================
+const sections = document.querySelectorAll('section[id]');
+const spy = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const id = entry.target.getAttribute('id');
+            navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === `#${id}`));
+        }
     });
-}
+}, { rootMargin: '-45% 0px -50% 0px' });
+sections.forEach(s => spy.observe(s));
 
-/**
- * Initialize and start the clock
- */
-function initClock() {
-    // Initial update
-    updateAllClocks();
-    
-    // Update every second
-    setInterval(updateAllClocks, 1000);
-}
+// ==================== REVEAL ON SCROLL ====================
+const revealer = new IntersectionObserver((entries, obs) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            obs.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => revealer.observe(el));
 
-// Start the clock when page loads
-document.addEventListener('DOMContentLoaded', initClock);
+// ==================== FOOTER YEAR ====================
+document.getElementById('year').textContent = new Date().getFullYear();
