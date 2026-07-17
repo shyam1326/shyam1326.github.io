@@ -1,6 +1,6 @@
 // ==================== SOCIAL ICONS (clone template into both slots) ====================
 const tpl = document.getElementById('socials-tpl');
-['socials-top', 'socials-bottom'].forEach(id => {
+['socials-top'].forEach(id => {
     const slot = document.getElementById(id);
     if (slot && tpl) slot.appendChild(tpl.content.cloneNode(true));
 });
