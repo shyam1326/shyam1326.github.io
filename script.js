@@ -1,3 +1,10 @@
+// ==================== SOCIAL ICONS (clone template into both slots) ====================
+const tpl = document.getElementById('socials-tpl');
+['socials-top', 'socials-bottom'].forEach(id => {
+    const slot = document.getElementById(id);
+    if (slot && tpl) slot.appendChild(tpl.content.cloneNode(true));
+});
+
 // ==================== MOBILE NAV ====================
 const hamburger = document.querySelector('.hamburger');
 const navMenu = document.querySelector('.nav-list ul');
@@ -9,7 +16,6 @@ function toggleMenu(open) {
     hamburger.classList.toggle('active', isOpen);
     hamburger.setAttribute('aria-expanded', String(isOpen));
 }
-
 hamburger.addEventListener('click', () => toggleMenu());
 navLinks.forEach(link => link.addEventListener('click', () => toggleMenu(false)));
 
@@ -19,7 +25,7 @@ const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 20);
 onScroll();
 window.addEventListener('scroll', onScroll, { passive: true });
 
-// ==================== SCROLLSPY (active nav link) ====================
+// ==================== SCROLLSPY ====================
 const sections = document.querySelectorAll('section[id]');
 const spy = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -39,7 +45,7 @@ const revealer = new IntersectionObserver((entries, obs) => {
             obs.unobserve(entry.target);
         }
     });
-}, { threshold: 0.12 });
+}, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => revealer.observe(el));
 
 // ==================== FOOTER YEAR ====================
